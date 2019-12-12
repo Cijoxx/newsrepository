@@ -1,0 +1,38 @@
+server:
+  port: 8029
+  servlet:
+    context-path: /web
+
+spring:
+  datasource:
+    druid:
+      driver-class-name: com.mysql.jdbc.Driver
+      url: jdbc:mysql://121.40.33.146:3306/news?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8
+      username: root
+      password: 123456
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 8MB
+      max-request-size: 8MB
+  resources:
+    static-locations: classpath:./static/
+dubbo:
+  application:
+    name: boot-travel-customer
+  registry:
+    address: zookeeper://127.0.0.1:2181
+  protocol:
+    port: -1 # random port
+  consumer:
+    timeout: 6000
+  provider:
+    timeout: 6000
+
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
+  returnPageInfo: check

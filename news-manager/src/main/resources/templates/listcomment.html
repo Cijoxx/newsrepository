@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html  xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>欢迎页面-X-admin2.0</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="css/font.css">
+    <link rel="stylesheet" href="css/xadmin.css">
+    <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/xadmin.js"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+<div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">演示</a>
+        <a>
+          <cite>导航元素</cite></a>
+      </span>
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+</div>
+<div class="x-body">
+    <div class="layui-row">
+        <form class="layui-form layui-col-md12 x-so" action="searchByuseridOrshowid" method="post">
+            <input type="text" name="userid" placeholder="请输入用户id" autocomplete="off" class="layui-input">
+            <input type="text" name="showid"  placeholder="请输入新闻id" autocomplete="off" class="layui-input">
+            <button class="layui-btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
+        </form>
+    </div>
+    <xblock>
+        <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
+        <span class="x-right" style="line-height:40px" th:text="'共有数据：'+${session.pageInfo2.total}+'条'"></span>
+    </xblock>
+    <table class="layui-table">
+        <thead>
+        <tr>
+            <th>
+                <input type="checkbox" name="allck" th:value="${session.pageInfo2.pageNum}" />
+            </th>
+            <th>新闻id</th>
+            <th>新闻标题</th>
+            <th>评论id</th>
+            <th>评论</th>
+            <th>用户ID</th>
+            <th>用户姓名</th>
+            <th>操作</th>
+        </thead>
+        <tbody>
+        <tr th:each="comment,commentStatus:${session.pageInfo2.list}">
+            <td>
+                <input type="checkbox" name="signalck" th:value="${comment.commentid}" />
+            </td>
+            <!-- <td th:text="${user.username}"></td>-->
+            <td th:text="${comment.showid}"></td>
+            <td th:text="${comment.newsEntity.showtitle}"></td>
+            <td th:text="${comment.commentid}"></td>
+            <td th:text="${comment.commentcontent}"></td>
+            <td th:text="${comment.userid}"></td>
+            <td th:text="${comment.userEntity.username}"></td>
+            <td>
+                <!-- <a th:if="${user.userEntity.userstatus} == 0 " th:onclick="'member_stop(this,'+${user.userEntity.userid}+')'" href="javascript:;" th:title="启用"></a>
+                 <a th:if="${user.userEntity.userstatus} == 1 " th:onclick="'member_stop(this,'+${user.userEntity.userid}+')'" href="javascript:;" th:title="禁用"></a>
+
+                 <a th:title="编辑" onclick="x_admin_show('编辑','jumpedit?aid=${adminPojo.aid}')" href="javascript:;">
+                     <i class="layui-icon">&#xe642;</i>
+                 </a>-->
+                <a th:title="删除" th:onclick="'member_del(this, '+${comment.commentid}+')'" href="javascript:;">
+                    <i class="layui-icon">&#xe640;</i>
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="page">
+        <div>
+            <!--如果当前页不是第一页,给上一页箭头附加连接到当前页的前一页-->
+            <a th:if="${session.pageInfo2.pageNum } != ${session.pageInfo2.firstPage}" class="prev" th:href="@{'adminSeeNeesAndCon?pageNum='+${session.pageInfo2.prePage}+'&pageSize='+${session.pageInfo2.pageSize}}">&lt;&lt;</a>
+            <!--循环打印页码-->
+            <!--如果页码不等于当前页的页码，则为页码附加连接-->
+            <a th:each="pg:${session.pageInfo2.navigatepageNums}" class="num" th:href="@{'adminSeeNeesAndCon?pageNum='+${pg}+'&pageSize='+${session.pageInfo2.pageSize}}" th:text="${pg}"></a>
+
+            <!--如果当前页是最后一页，则给下一页箭头附件连接到当前页-->
+            <a th:if="${session.pageInfo2.pageNum } != ${session.pageInfo2.lastPage}" class="next" th:href="@{'adminSeeNeesAndCon?pageNum='+${session.pageInfo2.pageNum}+'&pageSize='+${session.pageInfo2.pageSize}}">&gt;&gt;</a>
+
+        </div>
+
+    </div>
+    <script>
+
+        $(document).ready(function(){
+            $("input[name='allck']").click(function(){
+                $("input[name='signalck']").prop("checked",$("input[name='allck']").prop("checked"));
+            });
+
+            $("input[name='signalck']").click(function(){
+                var vt = $("input[name='signalck']").length == $("input[name='signalck']:checked").length;
+                $("input[name='allck']").prop("checked",vt);
+            });
+        });
+
+        layui.use('laydate', function(){
+            var laydate = layui.laydate;
+
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#start' //指定元素
+            });
+
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#end' //指定元素
+            });
+        });
+
+        /*用户-停用*/
+        function member_stop(obj,id){
+
+            if($(obj).attr('title')=='禁用'){
+                layer.confirm('确认要禁用吗？',function(index){
+                    //设置用户停用状态
+                    var result = setAStatus(id,0);
+                    if(result){
+                        //发异步把用户状态进行更改
+                        $(obj).attr('title','启用')
+                        $(obj).find('i').html('&#xe62f;');
+
+                        $(obj).parents("tr").find(".td-status").find('span').addClass('layui-btn-disabled').html('已禁用');
+                        layer.msg('已禁用!',{icon: 4,time:1000});
+                    }else{
+                        layer.msg('状态修改失败！',{icon:5,time: 1000});
+                    }
+                    location.href="adminlist";
+                });
+            }else{
+                layer.confirm('确认要启用吗？',function(index) {
+                    var result = setAStatus(id, 1);
+                    if (result) {
+                        $(obj).attr('title', '禁用')
+                        $(obj).find('i').html('&#xe601;');
+
+                        $(obj).parents("tr").find(".td-status").find('span').removeClass('layui-btn-disabled').html('正常');
+                        layer.msg('已启用!', {icon: 1, time: 1000});
+                    } else {
+                        layer.msg('状态修改失败！',{icon:5,time: 1000});
+                    }
+                    location.href="adminlist";
+                });
+            }
+        }
+
+        /*用户-删除*/
+        function member_del(obj,commentid){
+            console.log(commentid)
+
+
+            $.ajax({
+                url: "delcommentByCid",
+                data: {"commentid": commentid},
+                async: false,
+                type: "post",
+                success: function (result) {
+                    if ("0000" == result) {
+                        window.location.href = "listcomment"
+                    }
+                }
+
+
+            });
+
+        }
+
+        /*     location.href="adminlist";
+         });*/
+
+
+
+
+        function delAll (argument) {
+            console.log("nini");
+
+            var length = $("input[name='signalck']:checked").length;
+            var ids = "";
+            for(var i=0;i<length;i++){
+
+                ids += $("input[name='signalck']:checked").eq(i).val()+',';
+
+
+
+            }
+            $.ajax({
+                url:"delmanycomment",
+                data:{"ids":ids},
+                async: false,
+                type:"post",
+                success:function(result){
+                    if("0000"==result){
+
+                        window.location.href = "listcomment";
+                    }
+
+                }
+
+
+
+            });
+            var data = tableCheck.getData();
+
+
+        }
+
+        /* //设置用户状态
+         function setAStatus(targetId,status){
+             var flag ;
+             $.ajax({
+                 url:"setAStatus",
+                 data:{"aid":targetId,"astatus":status},
+                 async: false,
+                 type:"post",
+                 success:function(result){
+                     flag = result;
+                 },
+                 error:function () {
+                     flag = "false";
+                 }
+             });
+             return flag;
+         }*/
+
+        /* //设置用户状态
+         function setAStatusByIds(targetIds,status){
+             var flag ;
+             $.ajax({
+                 url:"setAStatusByIds",
+                 data:{"ids":targetIds,"astatus":status},
+                 async: false,
+                 type:"post",
+                 success:function(result){
+                     flag = result;
+                 },
+                 error:function () {
+                     flag = "false";
+                 }
+             });
+             return flag;
+         }*/
+    </script>
+    <script>var _hmt = _hmt || []; (function() {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?b393d153aeb26b46e9431fabaf0f6190";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+    })();</script>
+</body>

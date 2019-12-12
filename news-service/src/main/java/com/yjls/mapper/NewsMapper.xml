@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjls.mapper.NewsMapper">
+     <sql id="show">
+         showid,showtitle,showpicture,showcontent,showtype,showtime,showviews,showgivegood,showcomment,
+         showstatus,userid
+     </sql>
+
+    <select id="listNews" resultType="newsEntity">
+        select <include refid="show"></include> from news_show where showstatus=1
+            <if test="null!=showtitle and ''!=showtitle">
+                and showtitle like  concat("%",#{showtitle},"%")
+            </if>
+            <if test="null!=showtype and ''!=showtype">
+                and showtype=#{showtype}
+            </if>
+
+    </select>
+
+    <!--新闻按浏览量展示-->
+    <select id="listbyviews" resultType="newsEntity">
+        select <include refid="show"></include> from news_show where showstatus=1
+        order by showviews desc limit 8
+    </select>
+
+    <!--新闻按时间展示4条在首页-->
+    <select id="listbytime" resultType="newsEntity">
+        select <include refid="show"></include> from news_show where showstatus=1
+        order by showtime desc limit ${newsRows}
+    </select>
+
+    <!--根据新闻id查询新闻信息-->
+    <select id="searchNewsById" resultType="newsEntity">
+        select <include refid="show"></include> from news_show where showid=#{showid}
+    </select>
+
+    <resultMap id="newsResultMap" type="newsEntity">
+        <id column="showid" property="showid"></id>
+        <result column="showtitle" property="showtitle"></result>
+        <result column="showpicture" property="showpicture"></result>
+        <result column="showcontent" property="showcontent"></result>
+        <result column="showtype" property="showtype"></result>
+        <result column="showtime" property="showtime"></result>
+        <result column="showviews" property="showviews"></result>
+        <result column="showgivegood" property="showgivegood"></result>
+        <result column="showcomment" property="showcomment"></result>
+        <result column="showstatus" property="showstatus"></result>
+        <result column="userid" property="userid"></result>
+        <association property="user" javaType="userEntity">
+            <id column="userid" property="userid"></id>
+            <result column="applyrealname" property="applyrealname"></result>
+        </association>
+    </resultMap>
+
+    <!--后台管理员查看新闻-->
+    <select id="getnews" resultMap="newsResultMap" >
+        select showid,showtitle,showtype,showstatus,nshow.userid,nuser.applyrealname from news_show nshow LEFT JOIN
+        news_user nuser on nuser.userid=nshow.userid
+        <where>
+            <if test="null!=showtype and 0!=showtype">
+                and showtype=#{showtype}
+            </if>
+            <if test="null!=showtitle and ''!=showtitle">
+                and showtitle like  concat("%",#{showtitle},"%")
+            </if>
+            <if test="null!=userid and ''!=userid">
+                and nshow.userid=#{userid}
+            </if>
+            <if test="null!=showstatus and ''!=showstatus">
+                and showstatus=#{showstatus}
+            </if>
+        </where>
+        order by showid
+    </select>
+
+    <!--管理员查看新闻详情-->
+    <select id="getnewsdetail" resultType="newsEntity">
+        select showid,showtitle,showtype,showpicture,showcontent,showtime,showviews,showgivegood,showcomment,
+        userid from news_show nshow where showid=#{showid}
+    </select>
+
+    <!--管理员根据新闻id删除新闻-->
+    <update id="delnews">
+        update news_show set showstatus=2 where showid in ${idstr}
+    </update>
+    
+  <!-- 管理员审核通过新闻-->
+     <update id="checknewspass">
+         update news_show set showstatus=1 where showid=#{showid}
+     </update>
+
+    <!--管理员审核新闻未通过-->
+    <update id="checknewsfail">
+         update news_show set showstatus=4 where showid=#{showid}
+    </update>
+
+
+    <!--管理员恢复新闻-->
+    <update id="makenewslive">
+        update news_show set showstatus = 1 where showid=#{showid}
+    </update>
+
+    <!--新闻点赞-->
+    <update id="givegood">
+        update news_show set showgivegood=showgivegood+1 where showid=#{showid}
+    </update>
+
+    <!--新闻浏览量-->
+    <update id="views">
+        update news_show set showviews=showviews+1 where showid=#{showid}
+    </update>
+</mapper>

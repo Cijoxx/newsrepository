@@ -1,0 +1,193 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"  xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>注册</title>
+
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="userLogin/css/dmaku.css" />
+</head>
+<body>
+
+<header id="header">
+    <!--<a href="javascript:" class="logo"></a>-->
+    <i class="icons">ACENEWS</i>
+</header>
+
+<input type="hidden" value = "false" id = "isVisiable_request_form_verifyCode" />
+<input type="hidden" value = "true" id = "is_must_show_verify_code" />
+
+<section id="main">
+    <h1>上传头像</h1>
+    <input type="file" id="upload" name="customerImage" accept="image/*" style="display: none" >
+
+    <form id="registForm" accept-charset="utf-8" data-view="phoneRegister" enctype="multipart/form-data">
+
+        <div class="clearfix" data-propertyname="useraccount" data-controltype="t">
+            <span style="color: red">*</span>账号：<input type="text" placeholder="输入账号" id="user_account" name="useraccount"  data-required="required" autocomplete="off" onchange="acOnchange(this);" />
+        </div>
+
+        <div class="clearfix" data-propertyname="password" data-controltype="Password">
+            <span style="color: red">*</span>密码<input type="password" name="userpass" placeholder="输入密码" data-required="required" autocomplete="off" onchange="passOnchange(this);" />
+        </div>
+
+        <div class="clearfix" data-propertyname="username" data-controltype="">
+            <span style="color: red">*</span>密码确认<input type="password" name="userpassconfirm" placeholder="再次确认密码" data-required="required" autocomplete="off" onchange="confirmPassOnchange(this);" />
+        </div>
+
+        <div class="clearfix btn_login" data-propertyname="submit" data-controltype="Botton">
+            <input type="button" name="submit" value="注册">
+        </div>
+
+        <div class="clearfix goregister">
+            <a href="jumpLogin">登录</a>
+        </div>
+
+    </form>
+</section>
+
+<!-- 页面主体END -->
+
+<footer id="footer">
+    <!-- <p>
+        <a href="">关于我们</a>
+        <a href="">意见反馈</a>
+        <a href="">用户协议</a>
+        <a href="">下载APP</a>
+        <a href="">使用流程</a>
+        <a href="">信任与保障</a>
+        <a href="">契约精神</a>
+        <a href="">帮助中心</a>
+    </p> -->
+</footer>
+</body>
+<script type="text/javascript">
+    function acOnchange(obj){
+        var useraccount = obj.value;
+        if(null == useraccount || ""== useraccount){
+            alert("账户不能为空！");
+        }else{
+            $.ajax({
+                url:"uniqueCheck",
+                data: {"useraccount":obj.value},
+                type:"post",
+                success:function(result){
+                    if(result.result=="1012"){
+                        alert(result.resultMsg);
+                        $("input[name='useraccount']").val("");
+                    }
+                }
+            });
+        }
+    }
+    /*两次输入密码对比*/
+    function passOnchange(obj){
+        var pass = obj.value;
+        if(null == pass || "" == pass){
+            alert("密码不能为空！");
+        }else{
+            var confirmPass = $("input[name='userpassconfirm']").val();
+            if(""!=confirmPass && confirmPass != pass){
+                alert("两次密码输入不一致！");
+                $("input[name='userpass']").val("");
+                $("input[name='userpassconfirm']").val("");
+            }
+        }
+    }
+
+    /*两次输入密码对比*/
+    function confirmPassOnchange(obj){
+        var confirmPass = obj.value;
+        var pass = $("input[name='userpass']").val();
+        if(null != pass && ""!=pass && confirmPass != pass){
+            alert("两次密码输入不一致！");
+            $("input[name='userpass']").val("");
+            $("input[name='userpassconfirm']").val("");
+        }
+    }
+
+    $("h1").click(function(){
+        $("#upload").click();
+        $("#upload").on("change",function(){
+            var objUrl = getObjectURL(this.files[0]);
+            if(objUrl){
+                $("h1").css({"background":"url("+objUrl+") no-repeat","background-size":"64px 64px"});
+            }
+        });
+    });
+
+
+    //获取头像文件的url
+    function getObjectURL(file){
+        var fileUrl = null;
+        if(window.createObjectURL != undefined){
+            fileUrl = window.createObjectURL(file);
+        }else if(window.URL != undefined){
+            fileUrl = window.URL.createObjectURL(file);
+        }else if(window.webkitURL != undefined){
+            fileUrl = window.webkitURL.createObjectURL(file);
+        }
+        return fileUrl;
+    }
+
+    //提交用户注册数据
+    $("input[name='submit']").bind('click',function(){
+        var useraccount = $("input[name='useraccount']").val();
+        var userpass = $("input[name='userpass']").val();
+        var confirmpass = $("input[name='userpassconfirm']").val();
+        var headImage = $("#upload")[0].files[0];
+        if(null == useraccount || "" == useraccount){
+            alert("用户账户不能为空！");
+        }else if(null == userpass || "" == userpass){
+            alert("用户密码不能为空！");
+        }else if(null == confirmpass || "" == confirmpass){
+            alert("请输入确认密码！");
+        }else if(null == headImage){
+            //获取表单数据
+            var formData = new FormData(document.getElementById("registForm"));
+            $.ajax({
+                url: "regist",
+                type: "post",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (result) {
+                    if (result.result == "0000") {
+                        //添加成功，跳转到登录
+                        alert(result.resultMsg);
+                        window.location.href = result.resultUrl;
+                    } else {
+                        //添加失败，刷新本页
+                        alert(result.resultMsg);
+                        window.location.href = result.resultUrl;
+                    }
+                }
+            });
+        }else{
+            //获取表单数据
+            var formData = new FormData(document.getElementById("registForm"));
+            formData.append("headImage",headImage);
+            $.ajax({
+                url: "registWithIcon",
+                type: "post",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (result) {
+                    if (result.result == "0000") {
+                        //添加成功，跳转到登录
+                        alert(result.resultMsg);
+                        window.location.href = result.resultUrl;
+                    } else {
+                        //添加失败，刷新本页
+                        alert(result.resultMsg);
+                        window.location.href = result.resultUrl;
+                    }
+                }
+            });
+        }
+    });
+
+</script>
+</html>

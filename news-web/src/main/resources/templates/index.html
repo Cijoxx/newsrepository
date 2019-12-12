@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zxx" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="HandheldFriendly" content="true">
+    <meta content="telephone=no" name="format-detection">
+    <script src="news/js/jquery.min.js"></script>
+    <script src="news/js/bootstrap.min.js"></script>
+    <!-- Custom JavaScript -->
+    <script src="news/js/main.js"></script>
+    <link href="news/css/main.css" rel="stylesheet" type="text/css" />
+    <!-- favicon -->
+    <link rel="shortcut icon" type="news/image/png" href="favicon.png" />
+
+    <!--[if (gt IE 9)|!(IE)]><!-->
+    <!-- custom CSS -->
+
+    <!-- END custom CSS -->
+    <!--<![endif]-->
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <title>首页</title>
+</head>
+<body>
+<header id="header" class="header">
+    <!-- Header -->
+    <script th:inline="javascript">
+        $("#header").load("headermenu");
+    </script>
+    <!-- END header -->
+    <!-- header slider -->
+</header>
+<div class="slate_gray">
+    <div class="container">
+        <div class="row header_news_panel">
+            <!-- Tab panes -->
+            <div class="col-sm-8 tab-content tab-content_mob-p0">
+                <div role="tabpanel" class="tab-pane fade in active" id="home">
+                    <img src="news/img/content/slide1.jpg" alt="main img" class="tab-pane__img">
+                    <div class="header_news_text tab-pane__block">
+                        <p class="tab-pane__category yel_line">NEWS</p><a th:href="jumpuserinfo">个人中心</a>
+                        <a class="tab-pane__title" style="text-decoration:none">欢迎来到ace新闻</a>
+                        <p class="tab-pane__text">这里是全球最大的新闻网站，随时随刻为您带来第一手独家新闻</p>
+                    </div>
+                </div>
+            </div>
+            <!-- END Tab panes -->
+            <!-- Nav tabs -->
+            <div class="col-sm-4 news-tabs">
+                <p class="news-tabs__title h2">Last news</p>
+                <ul class="news-tabs__nav nav nav-tabs shadow_text" role="tablist">
+                    <li th:each="lastNews,lastNewsStatus:${session.newestList}" role="presentation" >
+                        <a th:href="@{'jumpNews?showid='+${lastNews.showid}}" role="tab" >
+                            <span th:text="${#dates.format(lastNews.showtime,'yyyy-MM-dd HH-mm-ss')}" class="time"></span>
+                            <p th:text="${lastNews.showtitle}"></p>
+                        </a>
+                    </li>
+                    <!--<li role="presentation">
+                        <a href="#profile" role="tab" data-toggle="tab">
+                            <span class="time">today, 11:22</span>
+                            Volkswagen hit by multiple probes in US Volkswagen hit by multiple probes in US
+                        </a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#messages" role="tab" data-toggle="tab">
+                            <span class="time">today, 12:33</span>
+                            Volkswagen hit by multiple probes in US Volkswagen hit by multiple probes in US
+                        </a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#settings" role="tab" data-toggle="tab">
+                            <span class="time">today, 14:44</span>
+                            Volkswagen hit by multiple probes in US Volkswagen hit by multiple probes in US
+                        </a>
+                    </li>-->
+                </ul>
+            </div>
+            <!-- END Nav tabs -->
+        </div>
+    </div>
+</div>
+<!-- END header slider -->
+<div class="tlinks">Collect from <a href="http://www.cssmoban.com/" >网页模板</a></div>
+<!-- top news-->
+<section>
+    <!-- top news -->
+    <!-- title -->
+    <div class="wrap wrap_white">
+        <div class="container title">
+            <h1 class="title__h1 underscore">热点新闻</h1>
+        </div>
+    </div>
+    <!-- END title -->
+
+    <div class="wrap wrap_gray pt20">
+        <div class="container">
+            <div class="row" id="newsli">
+
+                <div th:each="list:${session.list}" class="col-sm-3">
+                    <div class="thumbnail thumbnail_small">
+                            <img th:src="${list.showpicture}"  style="height: 200px" width="150px"  >
+                        <div class="caption thumbnail__caption">
+                            <div class="news caption__news">
+                                <p th:if="${list.showtype}==1" class="news__category yellow-line">经济</p>
+                                <p th:if="${list.showtype}==2" class="news__category yellow-line">政治</p>
+                                <p th:if="${list.showtype}==3" class="news__category yellow-line">体育</p>
+                                <p th:if="${list.showtype}==4" class="news__category yellow-line">军事</p>
+                                <p th:if="${list.showtype}==5" class="news__category yellow-line">娱乐</p>
+                                <a th:href="@{'jumpNews?showid='+${list.showid}}" class="news__link">
+                                    <p class="news__text" th:text="${list.showtitle}"></p>
+                                </a>
+                            </div>
+                            <div class="posted">
+                                <span th:text="${#dates.format(list.showtime,'yyyy-MM-dd HH:mm:ss')}" class="posted__date"></span>
+                                <ul class="posted__icon">
+
+                                    <li>
+                                        <span th:text="${list.showcomment}" class="icon-comment-empty"></span>
+                                    </li>
+                                    <li>
+                                        <span th:text="${list.showviews}" class="icon-eye"></span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <!-- top news -->
+    <!-- title -->
+    <div class="wrap wrap_white">
+        <div class="container title">
+            <h1 class="title__h1 underscore">一起看新闻</h1>
+        </div>
+    </div>
+    <!-- END title -->
+
+    <div class="wrap wrap_gray pt20">
+        <div class="container">
+            <div class="row" id="newslis">
+
+                <div th:each="newslist:${session.list2}" class="col-sm-3">
+                    <div class="thumbnail thumbnail_small">
+                        <a th:href="@{'jumpNews?showid='+${newslist.showid}}" class="thumbnail__link">
+                            <img th:src="${newslist.showpicture}"  style="height: 200px" >
+                        </a>
+                        <div class="caption thumbnail__caption">
+                            <div class="news caption__news">
+                                <p class="news__category yellow-line" >
+                                    <a th:if="${newslist.showtype}==1">经济</a>
+                                    <a th:if="${newslist.showtype}==2">政治</a>
+                                    <a th:if="${newslist.showtype}==3">体育</a>
+                                    <a th:if="${newslist.showtype}==4">军事</a>
+                                    <a th:if="${newslist.showtype}==5">娱乐</a></p>
+                                <a th:href="@{'jumpNews?showid='+${newslist.showid}}" class="news__link">
+                                    <p class="news__text" th:text="${newslist.showtitle}"></p>
+                                </a>
+                            </div>
+                            <div class="posted">
+                                <span th:text="${#dates.format(newslist.showtime,'yyyy-MM-dd HH:mm:ss')}" class="posted__date"></span>
+                                <ul class="posted__icon">
+                                    <li>
+                                        <span th:text="${newslist.showcomment}" class="icon-comment-empty"></span>
+                                    </li>
+                                    <li>
+                                        <span th:text="${newslist.showviews}" class="icon-eye"></span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

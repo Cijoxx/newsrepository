@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjls.mapper.CommentMapper">
+
+    <!--评论字段-->
+    <sql id="commentField">
+        commentid,commenttime,commentcontent,showid,userid
+    </sql>
+
+    <!--加评论人字段-->
+    <sql id="commentOfUserField">
+        commentid,commenttime,commentcontent,showid,nu.userid,username,userpass,useraccount,userrole,userphoto,userstatus
+    </sql>
+
+    <resultMap id="commentResultMap" type="commentEntity">
+        <id column="commentid" property="commentid"></id>
+        <result column="commenttime" property="commenttime"></result>
+        <result column="commentcontent" property="commentcontent"></result>
+        <result column="showid" property="showid"></result>
+        <result column="userid" property="userid"></result>
+        <association property="userEntity">
+            <id column="userid" property="userid"></id>
+            <result column="username" property="username"></result>
+            <result column="userpass" property="userpass"></result>
+            <result column="useraccount" property="useraccount"></result>
+            <result column="userrole" property="userrole"></result>
+            <result column="userphoto" property="userphoto"></result>
+            <result column="userstatus" property="userstatus"></result>
+        </association>
+    </resultMap>
+
+    <!--根据新闻id查询评论-->
+    <select id="queryCommentByNewsId" resultMap="commentResultMap">
+        select <include refid="commentOfUserField"></include>
+        from news_comment nc
+        left join news_user nu
+        on nu.userid = nc.userid
+        where showid = #{showid} order by commenttime desc
+    </select>
+
+    <!--用户添加评论-->
+    <insert id="addComment" parameterType="commentEntity">
+        insert into news_comment(commenttime,commentcontent,showid,userid) values(#{commenttime},#{commentcontent},#{showid},#{userid});
+    </insert>
+
+    <!--管理员查看新闻信息,评论-->
+    <resultMap id="newsAndCon" type="commentEntity" autoMapping="true">
+        <id column="commentid" property="commentid"></id>
+        <result column="commenttime" property="commenttime"></result>
+        <result column="commentcontent" property="commentcontent"></result>
+        <result column="showid" property="showid"></result>
+        <result column="userid" property="userid"></result>
+
+        <association property="newsEntity" javaType="newsEntity">
+            <id column="showid" property="showid"></id>
+            <result column="showtitle" property="showtitle"></result>
+            <result column="showpicture" property="showpicture"></result>
+            <result column="showcontent" property="showcontent"></result>
+            <result column="showtype" property="showtype"></result>
+            <result column="showviews" property="showviews"></result>
+            <result column="showtime" property="showtime"></result>
+            <result column="showstatus" property="showstatus"></result>
+            <result column="showcomment" property="showcomment"></result>
+            <result column="userid" property="userid"></result>
+        </association>
+        <association property="userEntity" javaType="userEntity">
+            <id column="userid" property="userid"></id>
+            <result column="username" property="username"></result>
+            <result column="userpass" property="userpass"></result>
+            <result column="useraccount" property="useraccount"></result>
+            <result column="username" property="username"></result>
+        </association>
+    </resultMap>
+
+    <select id="adminSeeNewsandCon" resultMap="newsAndCon">
+     SELECT nc.commentcontent,nc.commentid,nc.commenttime,nc.showid,ns.showtitle,nu.userid,nu.username
+     FROM news_comment nc
+    LEFT JOIN news_show ns on
+    nc.showid=ns.showid
+    LEFT JOIN news_user nu
+    on nu.userid=ns.userid
+    <where>
+        <if test="null != userid and 0 != userid">
+           and nc.userid = #{userid}
+        </if>
+        <if test="null != showid and 0 != showid">
+           and nc.showid = #{showid}
+        </if>
+    </where>
+    </select>
+
+    <!--根据评论删除信息-->
+    <delete id="delcomment" >
+        delete from news_comment where commentid=#{commentid}
+    </delete>
+
+    <!--批量删除评论信息-->
+    <delete id="delmanycomment">
+        delete from  news_comment where commentid in ${ids}
+    </delete>
+
+    <select id="searchByuseridOrshowid" resultMap="newsAndCon">
+        SELECT nc.commentcontent,nc.commentid,nc.commenttime,nc.userid,nc.showid,ns.showtitle,nu.userid,nu.username FROM news_comment nc
+        LEFT JOIN news_show ns on nc.showid=ns.showid LEFT JOIN news_user nu on nu.userid=ns.userid where ns.showtitle is not null
+        <if test="null !=userid">
+            and nc.userid=#{userid}
+        </if>
+        <if test="null !=showid">
+            and  nc.showid=#{showid}
+        </if>
+    </select>
+
+
+</mapper>

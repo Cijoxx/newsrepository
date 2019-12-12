@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>个人信息</title>
+    <link rel="stylesheet" href="user/bootstrap-3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="user/css/layout.css">
+    <link rel="stylesheet" href="user/css/index.css">
+    <link rel="stylesheet" type="text/css" href="user/css/person.css">
+    <!--  <link rel="stylesheet" type="text/css" href="../static/css/publish.css"> -->
+    <script src="user/js/jquery-3.4.1.min.js"></script>
+    <script src="user/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script src="user/echarts-2.2.7/echarts-all.js"></script>
+    <script type="text/javascript" src="user/js/publish.js"></script>
+    <script type="text/javascript" src="user/js/wangEditor.js"></script>
+    <script type="text/javascript" src="user/js/main.js"></script>
+    <link rel="stylesheet" href="user/css/reset.css">
+    <link rel="stylesheet" href="user/css/style.css">
+</head>
+<body>
+<!-- 右侧内容 -->
+<div class="content_right">
+    <div class="top_bar">
+        <!-- 用户信息 -->
+        <div class="user_info">
+            <img th:src="${session.userEntity.userphoto}" alt="">
+            欢迎你：<span th:text="${session.userEntity.username}"></span>
+        </div>
+
+    </div>
+    <!-- 内容 -->
+    <div class="content">
+        <div class="search_bar">
+
+            <span class="search_title">个人信息</span>&nbsp;&nbsp;
+
+        </div>
+        <!-- 搜索end -->
+        <div class="news_list">
+            <div class="login_container">
+                <div class="login_content">
+                    <div class="signin">
+                        <form action="edituser" method="post" enctype="multipart/form-data">
+                            <div class="form-group">
+                            <label >您的账号： </label>
+                           <span th:text="${session.userEntity.useraccount}"/></span>
+                            </div>
+                            <div class="form-group">
+                                <label >您是：</label>
+                               <span th:if="${session.userEntity.userrole==1}">读者</span></br>
+                                <span th:if="${session.userEntity.userrole==2}">作者</span></br>
+                                <span th:if="${session.userEntity.userrole==4}">读者(待审核)</span></br>
+                                <a th:href="jumpapplywriter">我要当作者</a>
+                            </div>
+                            <div class="form-group">
+                                <label >昵称: </label>
+                                <input type="text" class="form-control person_input"
+                                       name="username" placeholder="请添加一个昵称" th:value="${session.userEntity.username}">
+                            </div>
+                            <div class="form-group">
+                                <label >密码: </label>
+                                <input type="password" class="form-control person_input"
+                                       name="userpass" placeholder="请输入您的新密码">
+                            </div>
+                            <label>上传头像</label>
+                            <input type="file" name="image" accept="*">
+                            <input type="submit" value="提交" style='background-color:green'>
+                            <input type="button" style='background-color:red' onclick="javascript:history.back(-1);" value="返回">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

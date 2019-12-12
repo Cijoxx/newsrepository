@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjls.mapper.UserMapper">
+
+    <sql id="userField">
+        userid,username,userpass,useraccount,userrole,userphoto,userstatus
+    </sql>
+
+    <sql id="userMapField">
+        nu.userid,username,userpass,useraccount,userrole,userphoto,userstatus,nr.rid,rname,rdesc,nau.auid,auname,aupath,autype,aupid
+    </sql>
+
+    <resultMap id="userResultMap" type="userEntity">
+        <id column="userid" property="userid"></id>
+        <result column="username" property="username"></result>
+        <result column="userpass" property="userpass"></result>
+        <result column="useraccount" property="useraccount"></result>
+        <result column="userrole" property="userrole"></result>
+        <result column="userphoto" property="userphoto"></result>
+        <result column="usersatus" property="userstatus"></result>
+        <association property="role" javaType="roleEntity">
+            <id column="rid"></id>
+            <result column="rname" property="rname"></result>
+            <result column="rdesc" property="rdesc"></result>
+            <collection property="authlist" ofType="authEntity">
+                <id column="auid" property="auid"></id>
+                <result column="auname" property="auname"></result>
+                <result column="aupath" property="aupath"></result>
+                <result column="autype" property="autype"></result>
+                <result column="aupid" property="aupid"></result>
+            </collection>
+        </association>
+    </resultMap>
+
+    <!--用户登录-->
+    <select id="loginUser" parameterType="userEntity" resultType="userEntity">
+        select <include refid="userField"></include> from news_user where useraccount=#{useraccount} and userpass= #{userpass}
+    </select>
+
+    <!--用户注册-->
+    <insert id="registUser" parameterType="userEntity">
+        insert into news_user(username,userpass,useraccount,userrole,userphoto,userstatus) values(#{username},#{userpass},#{useraccount},#{userrole},#{userphoto},#{userstatus})
+    </insert>
+
+    <!--用户账户唯一性检查-->
+    <select id="uniqueCheck" resultType="int">
+        select IFNULL((select count(1) from news_user where useraccount = #{useraccount}),0);
+    </select>
+
+    <!--展示个人信息-->
+    <select id="userinfo" resultType="userEntity">
+        select <include refid="userField"></include> from news_user where userid=#{userid}
+    </select>
+
+    <!--修改个人信息-->
+    <update id="edituser">
+        update news_user set username=#{username},userpass=#{userpass},userphoto=#{userphoto} where userid=#{userid}
+    </update>
+
+    <!--申请成为编辑-->
+     <update id="applywriter">
+         update news_user set applyrealname=#{applyrealname},applyidcard=#{applyidcard},applyreason=#{applyreason},userrole=4 where userid=#{userid}
+     </update>
+
+
+    <!--展示所有用户-->
+    <select id="listuser" resultType="userEntity" parameterType="userEntity">
+        select <include refid="userMapField"></include>
+        from news_user nu
+        left join news_user_role nur
+        on nu.userid = nur.userid
+        left join news_role nr
+        on nur.rid = nr.rid
+        left join news_role_auth nra
+        on nr.rid = nra.rid
+        left join news_auth nau
+        on nra.auid = nau.auid
+        <where>
+            <if test="null != useraccount and '' != useraccount">
+                and useraccount = #{useraccount}
+            </if>
+            <if test="null != username and '' != username">
+                and username like concat('%',#{username},'%')
+            </if>
+        </where>
+    </select>
+
+    <!--查询所有角色-->
+    <select id="listrole" resultType="roleEntity" parameterType="roleEntity">
+        select rid,rname,rdesc from news_role
+        <where>
+            <if test="null != rid and 0 != rid ">
+                and rid = #{rid}
+            </if>
+            <if test="null != rname and rname != rname">
+                and rname = #{rname}
+            </if>
+        </where>
+    </select>
+
+    <!--根据用户id删除用户信息-->
+    <update id="setStatusOfUser">
+        update news_user set userstatus = #{userstatus} where userid = #{userid}
+    </update>
+
+    <!--根据用户id查询用户信息-->
+    <select id="queryUserById" resultMap="userResultMap">
+        select <include refid="userMapField"></include>
+        from news_user nu
+        left join news_user_role nur
+        on nu.userid = nur.userid
+        left join news_role nr
+        on nur.rid = nr.rid
+        left join news_role_auth nra
+        on nr.rid = nra.rid
+        left join news_auth nau
+        on nra.auid = nau.auid
+        where nu.userid = #{userid}
+    </select>
+
+    <!--根据用户id修改用户信息-->
+    <update id="updUser" parameterType="userEntity">
+        update news_user
+        <set>
+            <if test="null != username and ''!=username">
+                username = #{username},
+            </if>
+            <if test="null != userpass and ''!=userpass">
+                userpass = #{userpass}
+            </if>
+            <if test="null != userrole and 0 != userrole">
+                userrole = #{userrole}
+            </if>
+            <if test="null != userphoto and ''!=userphoto">
+                userphoto = #{userphoto}
+            </if>
+        </set>
+        where userid = #{userid}
+    </update>
+
+    <!--根据用户id修改多个用户信息-->
+    <update id="setAStatusByIds">
+        update news_user set userstatus = #{userstatus} where userid in (${ids})
+    </update>
+
+
+</mapper>

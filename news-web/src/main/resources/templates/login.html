@@ -1,0 +1,114 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"  xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <!-- meta -->
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width"/>
+
+    <title>登录</title>
+
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="userLogin/css/dmaku2.css" />
+</head>
+<body>
+
+<header id="header">
+    <!--<a href="javascript:;" class="logo"></a>-->
+    <i class="icons">ACENEWS</i>
+</header><!-- /header -->
+
+<!-- 页面主体START -->
+<section id="main">
+    <h1>登录</h1>
+    <form accept-charset="utf-8" data-view="loginView">
+
+        <div class="clearfix" data-propertyname="username" data-controltype="Phone">
+            <input type="text" placeholder="输入账号" id="customer_account" name="useraccount" data-required="required" autocomplete="off" onchange="acOnchange(this);" />
+        </div>
+
+        <div class="clearfix" data-propertyname="password" data-controltype="Password">
+            <input type="password" id="customer_cpass" name="userpass" placeholder="输入密码" data-required="required" autocomplete="off" onchange="passOnchange(this);" >
+        </div>
+
+        <div class="verifyCodeInput clearfix"  data-propertyname="request_form_verifyCode" data-controltype="VerifyCode" style="display:none;">
+            <div class="code_cont">
+                <input type="text" name="" placeholder="请证明你不是机器人" data-required="required" autocomplete="off" >
+                <img src="" alt="" class="yzm">
+                <a href="javascript:;" class="reflash"></a>
+            </div>
+        </div>
+
+        <div class="clearfix">
+            <!-- <label>
+                <input type="checkbox" class="autologin" />
+                自动登录
+            </label> -->
+            <a href="javascript:;" class="forgot_pwd" th:text="忘记密码"></a>
+        </div>
+
+        <div class="clearfix btn_login" data-propertyname="submit" data-controltype="Botton">
+            <input type="button" name="submit" value="登录">
+        </div>
+
+        <div class="clearfix goregister">
+            <span class="reg_now" th:text="没有帐号"></span>
+            <a href="jumpregist" th:text="注册"></a>
+        </div>
+
+        <input type="hidden" value = "" id = "isVisiable_request_form_verifyCode" />
+
+    </form>
+</section>
+<!-- 页面主体END -->
+
+<footer id="footer">
+</footer><!-- jquery lib -->
+<!--拉勾UI框架 -->
+</body>
+<script th:inline="javascript">
+
+    //用户账户判空
+    function acOnchange(obj){
+        if(""== obj.value){
+            alert("账户不能为空！");
+        }
+    }
+
+    //密码判空
+    function passOnchange(obj){
+        var pass = obj.value;
+        if(""== pass){
+            alert("密码不能为空！");
+        }
+    }
+
+    /*用户确认登录*/
+    $("input[name='submit']").click(function(){
+        var useraccount = $("input[name='useraccount']").val();
+        var userpass = $("input[name='userpass']").val();
+        if(null == useraccount || "" == useraccount ){
+            alert("用户账户不能为空！");
+        }else if(null == userpass  || "" == userpass){
+            alert("用户账户不能为空！");
+        }else{
+            $.ajax({
+                url:"login",
+                data: {"useraccount":useraccount,"userpass":userpass,"resultUrl":[[${referrerUrl}]]},
+                type:"post",
+                success: function(result){
+                    if(result.result=="0000"){
+                        alert(result.resultMsg);
+                        window.location.href = result.resultUrl;
+                    }else{
+                        alert(result.resultMsg)
+                        window.location.href = result.resultUrl;
+                    }
+                }
+            });
+        }
+    });
+</script>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>个人信息</title>
+    <link rel="stylesheet" href="user/bootstrap-3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="user/css/layout.css">
+    <link rel="stylesheet" href="user/css/index.css">
+    <link rel="stylesheet" type="text/css" href="user/css/person.css">
+    <!--  <link rel="stylesheet" type="text/css" href="../static/css/publish.css"> -->
+    <script src="user/js/jquery-3.4.1.min.js"></script>
+    <script src="user/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script src="user/echarts-2.2.7/echarts-all.js"></script>
+    <script type="text/javascript" src="user/js/publish.js"></script>
+    <script type="text/javascript" src="user/js/wangEditor.js"></script>
+    <script type="text/javascript" src="user/js/main.js"></script>
+    <link rel="stylesheet" href="user/css/reset.css">
+    <link rel="stylesheet" href="user/css/style.css">
+</head>
+<body>
+<!-- 右侧内容 -->
+<div class="content_right">
+    <div class="top_bar">
+        <!-- 用户信息 -->
+        <div class="user_info">
+            <img th:src="${session.userEntity.userphoto}" alt="">
+            欢迎你：<span th:text="${session.userEntity.username}"></span>
+        </div>
+
+    </div>
+    <!-- 内容 -->
+    <div class="content">
+        <div class="search_bar">
+
+            <span class="search_title">我要当作者</span>&nbsp;&nbsp;
+
+        </div>
+        <!-- 搜索end -->
+        <div class="news_list">
+            <div class="login_container">
+                <div class="login_content">
+                    <div class="signin">
+                        <form action="applywriter" method="post">
+                            <div class="form-group">
+                                <label ><h4>您的账号：</h4> </label>
+                                <span th:text="${session.userEntity.useraccount}"/></span>
+                            </div>
+
+                            <div class="form-group">
+                               <label>您的真实姓名:</label>
+                                <input type="text" class="form-control person_input"
+                                       name="applyrealname" placeholder="请输入您的真实姓名" >
+                            </div>
+                            <div class="form-group">
+                                <label ><h4>您的身份证号码: </h4></label>
+                                <input type="text" class="form-control person_input"
+                                       name="applyidcard" placeholder="请输入您的身份证号码">
+                            </div>
+                            <div class="form-group">
+                                <label ><h4>你的申请理由: </h4></label>
+                                <input type="text" class="form-control person_input"
+                                       name="applyreason" placeholder="在此输入你要成为作者的理由">
+                            </div>
+                            <label>#{error}</label>
+
+                            <input type="submit" value="提交" style='background-color:green'>
+                            <input type="button" style='background-color:red' onclick="javascript:history.back(-1);" value="返回">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
