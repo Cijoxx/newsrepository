@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <head>
+        <meta charset="UTF-8">
+        <title>欢迎页面-X-admin2.0</title>
+        <meta name="renderer" content="webkit">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport"
+              content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"/>
+        <link rel="stylesheet" href="css/font.css">
+        <link rel="stylesheet" href="css/xadmin.css">
+        <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+        <script type="text/javascript" src="lib/layui/layui.js" charset="utf-8"></script>
+        <script type="text/javascript" src="js/xadmin.js"></script>
+        <link rel="stylesheet" href="ztree/css/demo.css" type="text/css">
+        <link rel="stylesheet" href="ztree/css/zTreeStyle/zTreeStyle.css" type="text/css">
+        <script type="text/javascript" src="ztree/js/jquery.ztree.core.js"></script>
+        <script type="text/javascript" src="ztree/js/jquery.ztree.excheck.js"></script>
+    </head>
+
+</head>
+
+<body>
+<div class="x-body">
+    <form action="" method="post" class="layui-form layui-form-pane">
+        <div class="layui-form-item">
+            <label for="rname" class="layui-form-label">
+                <span class="x-red">*</span>角色名
+            </label>
+            <div class="layui-input-inline">
+                <input type="hidden" name="rid" th:value="${roleEntity.rid}">
+                <input type="text" id="rname" name="rname" required="" lay-verify="required"
+                       autocomplete="off" class="layui-input" th:value="${roleEntity.rname}">
+                <input type="hidden" name="auths" th:value="${partAuths}">
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">
+                拥有权限
+            </label>
+            <ul id="mytree" class="ztree"></ul>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label for="rdesc" class="layui-form-label">
+                描述
+            </label>
+            <div class="layui-input-block">
+                <textarea placeholder="请输入内容" id="rdesc" name="rdesc" th:text="${roleEntity.rdesc}" class="layui-textarea">
+                </textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <button class="layui-btn" lay-submit="" lay-filter="add" id="updatebtn01" type="button">修改</button>
+        </div>
+    </form>
+</div>
+<script th:inline="javascript">
+    var zTreeObj;
+    var setting = {
+//回调函数
+        callback:{
+            //复选框被勾取或取消勾取时触发的函数
+            onCheck:function (obj) {
+                //获取当前节点树被勾取的节点（true表示获取被勾选的，false表示未被勾选的）
+                var nodes = zTreeObj.getCheckedNodes(true);
+                var auidstr='';
+                //遍历选中节点集合(for循环中的node表示当前节点的下标)
+                for(node in nodes){
+                    //将所有的下标连接成一个字符串，用逗号隔开
+                    if (node == nodes.length-1){
+                        auidstr+=nodes[node].auid
+                    }else{
+                        auidstr+=nodes[node].auid+",";
+                    }
+                }
+                $("input[name='auths']").val(auidstr);
+
+            }
+        },
+
+
+
+        check:{
+            //设置树节点上是否显示（多选框或单选框）
+            enable:true,
+            //设置树节点前显示什么框
+            // chkStyle:"checkbox",
+            //设置被勾选或取消之后对父子节点的影响
+            // Y 属性定义 checkbox 被勾选后的情况；
+            // N 属性定义 checkbox 取消勾选后的情况；
+            // "p" 表示操作会影响父级节点；
+            // "s" 表示操作会影响子级节点。
+            chkboxType: { "Y": "p", "N": "s" },
+            //自动保存节点多选框，勾选状态
+            check: "isChecked"
+
+        },
+        //对data进行相关设置
+        data:{
+            simpleData:{
+                //是否采用简单数据模式 (Array)
+                //不需要用户再把数据库中取出的 List 强行转换为复杂的 JSON 嵌套格式
+                enable: true,
+                //设置子节点字段
+                idKey: "auid",
+                //设置父id
+                pIdKey: "aupid",
+                //设置根节点id
+                rootPId: ""
+            },
+            key:{
+                //节点名称展示
+                name:"auname",
+                open:true
+            }
+        }
+    }
+
+    var auths = [[${auths}]];   // tostring方法自己构建的json
+
+    var data1 = eval(auths);
+
+    //初始化树
+    zTreeObj = $.fn.zTree.init($("#mytree"), setting, data1);
+
+
+</script>
+<script type="application/javascript">
+
+
+    layui.use(['form','layer'], function(){
+        $ = layui.jquery;
+        var form = layui.form
+            ,layer = layui.layer;
+
+        //自定义验证规则
+        form.verify({
+            nikename: function(value){
+                if(value.length < 5){
+                    return '昵称至少得5个字符啊';
+                }
+            }
+            ,pass: [/(.+){6,12}$/, '密码必须6到12位']
+            ,repass: function(value){
+                if($('#L_pass').val()!=$('#L_repass').val()){
+                    return '两次密码不一致';
+                }
+            }
+        });
+
+        //监听提交
+        $("#updatebtn01").click(function () {
+            $.ajax({
+                type: "post",
+                url: "updRole",
+                data:$("form").serializeArray(),
+                success:function (result) {
+                    if (result.result = "0000"){
+                        layer.msg("添加成功！",{time:1000,icon:6,shift:6});
+                        var index = parent.layer.getFrameIndex(window.name);
+                        //关闭当前frame
+                        parent.layer.close(index);
+                    }
+                }
+            })
+        })
+
+    });
+</script>
+<script>var _hmt = _hmt || []; (function() {
+    var hm = document.createElement("script");
+    hm.src = "https://hm.baidu.com/hm.js?b393d153aeb26b46e9431fabaf0f6190";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+})();</script>
+</body>
+
+</html>

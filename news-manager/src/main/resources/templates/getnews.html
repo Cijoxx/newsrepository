@@ -47,7 +47,6 @@
                 <option th:value="5">娱乐</option>
             </select>
             <button class="layui-btn"  lay-submit="" lay-filter="find"><i class="layui-icon">&#xe615;</i></button>
-
         </form>
     </div>
     <xblock>
@@ -193,6 +192,7 @@
             var result = delnewbyids(ids);
             if(result){
                 layer.msg('已删除!',{icon:1,time:1000});
+                location.href="getnews"
             }else{
                 layer.msg('删除失败!',{icon:5,time:1000});
             }

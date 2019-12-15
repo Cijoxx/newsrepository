@@ -1,0 +1,46 @@
+
+<!DOCTYPE html>
+<html  xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>欢迎页面-X-admin2.0</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="css/font.css">
+    <link rel="stylesheet" href="css/xadmin.css">
+    <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/xadmin.js"></script>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <script type="text/javascript">
+
+    </script>
+</head>
+
+<body>
+<div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">演示</a>
+        <a>
+          <cite>导航元素</cite></a>
+      </span>
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+</div>
+<h3>用户昵称:<span th:text="${session.userlist2.username}"></span><br>
+    用户账号:<span th:text="${session.userlist2.useraccount}"></span><br>
+    用户照片:<img th:src="${session.userlist2.userphoto}" style="height: 100px" width="120px"><br>
+    用户真实姓名:<span th:text="${session.userlist2.applyrealname}"></span><br>
+    用户身份证号:<span th:text="${session.userlist2.applyidcard}"></span><br>
+    申请理由:<span th:text="${session.userlist2.applyreason}"></span><br></h3>
+<a type="button" th:if="${session.userlist2.userrole} == 4 " th:href="@{'checkwriterpass?userid='+${session.userlist2.userid}}"  style='background-color:green'>通过</a>
+<a type="button" th:if="${session.userlist2.userrole} == 4 " th:href="@{'checkwriterfail?userid='+${session.userlist2.userid}}"  style='background-color:red'>未通过</a>
+<input type="button" style='background-color:red' onclick="javascript:history.back(-1);" value="返回">
+
+</body>
+

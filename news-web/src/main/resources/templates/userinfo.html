@@ -49,11 +49,13 @@
                            <span th:text="${session.userEntity.useraccount}"/></span>
                             </div>
                             <div class="form-group">
-                                <label >您是：</label>
+                                您是：
                                <span th:if="${session.userEntity.userrole==1}">读者</span></br>
                                 <span th:if="${session.userEntity.userrole==2}">作者</span></br>
+                                <span th:if="${session.userEntity.userrole==3}">管理员</span></br>
                                 <span th:if="${session.userEntity.userrole==4}">读者(待审核)</span></br>
-                                <a th:href="jumpapplywriter">我要当作者</a>
+                                <a th:if="${session.userEntity.userrole==1}" th:href="jumpapplywriter">我要当作者</a>
+                                <a th:if="${session.userEntity.userrole==2}" th:href="jumpaddNews">我要上传新闻</a>
                             </div>
                             <div class="form-group">
                                 <label >昵称: </label>

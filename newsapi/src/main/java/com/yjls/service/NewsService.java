@@ -45,4 +45,13 @@ public interface NewsService {
 
     //新闻浏览量
     public boolean views(Integer showid);
+
+    //作者添加新闻
+    public boolean addNews (NewsEntity newsEntity);
+
+    //作者的所有新闻
+    public List<NewsEntity> getListNewsByUid (int  userid);
+
+    /*作者删除自己的新闻*/
+    public boolean delNews (int showid);
 }

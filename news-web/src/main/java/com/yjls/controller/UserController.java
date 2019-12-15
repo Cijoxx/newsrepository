@@ -126,6 +126,7 @@ public class UserController {
         }
 
         userEntity.setUserpass(StringUtil.getMD5Transfer(userEntity.getUserpass()));
+        userEntity.setUserrole(1);
         boolean result = userService.registUser(userEntity);
 
         if(result){
@@ -258,7 +259,6 @@ public class UserController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println(userEntity);
         boolean result = userService.edituser(userEntity);
         if(result){
             mv.setViewName("login");

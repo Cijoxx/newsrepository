@@ -2,17 +2,18 @@ package com.yjls.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 
-import com.yjls.entity.CommentEntity;
-import com.yjls.entity.NewsEntity;
-import com.yjls.entity.NewsFinal;
-import com.yjls.entity.ResponseResult;
+import com.yjls.entity.*;
 import com.yjls.service.CommentService;
 import com.yjls.service.NewsService;
+import com.yjls.util.StringUtil;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.*;
 import java.util.List;
 
 @Controller
@@ -34,7 +35,9 @@ public class NewsController {
         List<NewsEntity> list2 = newsService.listNews(newsEntity);
         request.getSession().setAttribute("list2",list2);
         //展示最新四条新闻
-        List<NewsEntity> listNewest = newsService.listbytime(NewsFinal.NUM_FOUR);
+        List<NewsEntity> listNewest = newsService.listbytime(6
+
+        );
         request.getSession().setAttribute("newestList",listNewest);
         return "index";
     }
@@ -94,5 +97,50 @@ public class NewsController {
     @RequestMapping("headermenu")
     public String jumpHeadermenu(){
         return "headermenu";
+    }
+
+    @RequestMapping("jumpaddNews")
+    public String jumpaddNews(){
+        return "addNews";
+    }
+
+    /*
+     * 作者添加新闻
+     * */
+    @RequestMapping("addNews")
+    public String addNews (NewsEntity newsEntity, HttpServletRequest request, MultipartFile image2) throws FileNotFoundException {
+        //上传头像
+        //获取文件名时用uuid避免重复
+        String fileName = StringUtil.getUUID().substring(0,6) + image2.getOriginalFilename();
+        //获取当前项目在tomcat中的位置
+        String filepath = "static/newsimages";
+        File file = new File(filepath);
+        //如果路径不存在就创建路径
+        if(!file.exists()) {
+            file.mkdirs();
+        }
+
+        //文件存放路径
+        String path =filepath +File.separator+ fileName;
+        newsEntity.setShowpicture("newsimages"+File.separator+fileName);
+        try (FileOutputStream fos = new FileOutputStream(path);
+             InputStream is = image2.getInputStream()) {
+            FileCopyUtils.copy(is,fos);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        UserEntity userEntity2 = (UserEntity) request.getSession().getAttribute("userEntity");
+        newsEntity.setUserid(userEntity2.getUserid());
+        newsEntity.setShowviews(0);
+        newsEntity.setShowcomment(0);
+        newsEntity.setShowgivegood(0);
+        /*newsEntity.setShowtype(1);*/
+        boolean b = newsService.addNews(newsEntity);
+        if (b){
+            return"index";
+        }
+        return "addNews"; //重新添加
     }
 }

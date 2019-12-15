@@ -12,7 +12,7 @@ public class UserEntity implements Serializable {
     private String userphoto;
     private Integer userstatus = 1;
     private String applyrealname;
-    private int applyidcard;
+    private String applyidcard;
     private String applyreason;
 
     private Integer pageNum = 1;
@@ -23,7 +23,7 @@ public class UserEntity implements Serializable {
     public UserEntity() {
     }
 
-    public UserEntity(Integer userid, String username, String userpass, String useraccount, Integer userrole, String userphoto, Integer userstatus, String applyrealname, int applyidcard, String applyreason, Integer pageNum, Integer pageSize, RoleEntity role) {
+    public UserEntity(Integer userid, String username, String userpass, String useraccount, Integer userrole, String userphoto, Integer userstatus, String applyrealname, String applyidcard, String applyreason, Integer pageNum, Integer pageSize, RoleEntity role) {
         this.userid = userid;
         this.username = username;
         this.userpass = userpass;
@@ -103,11 +103,11 @@ public class UserEntity implements Serializable {
         this.applyrealname = applyrealname;
     }
 
-    public int getApplyidcard() {
+    public String getApplyidcard() {
         return applyidcard;
     }
 
-    public void setApplyidcard(int applyidcard) {
+    public void setApplyidcard(String applyidcard) {
         this.applyidcard = applyidcard;
     }
 

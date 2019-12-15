@@ -65,7 +65,7 @@
                                 <input type="text" class="form-control person_input"
                                        name="applyreason" placeholder="在此输入你要成为作者的理由">
                             </div>
-                            <label>#{error}</label>
+                            <label><p th:text="${error}"></p> </label>
 
                             <input type="submit" value="提交" style='background-color:green'>
                             <input type="button" style='background-color:red' onclick="javascript:history.back(-1);" value="返回">

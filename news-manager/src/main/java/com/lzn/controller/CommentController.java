@@ -4,7 +4,6 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.github.pagehelper.PageInfo;
 import com.yjls.entity.CommentEntity;
 import com.yjls.service.CommentService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -20,8 +19,13 @@ public class CommentController {
     //评论列表展示
     @RequestMapping("adminSeeNeesAndCon")
     public String adminSeeNewsAndCon (HttpServletRequest request, CommentEntity commentEntity){
-        PageInfo<CommentEntity> pageInfo = commentService.adminSeeNewsandCon(commentEntity);
+        if(null ==commentEntity.getUserid() & null ==commentEntity.getShowid()){
+            PageInfo<CommentEntity> pageInfo = commentService.adminSeeNewsandCon(commentEntity);
+            request.getSession().setAttribute("pageInfo2",pageInfo);
+        }
+        PageInfo<CommentEntity> pageInfo = commentService.searchByuseridOrshowid(commentEntity);
         request.getSession().setAttribute("pageInfo2",pageInfo);
+
         return "listcomment";
     }
 

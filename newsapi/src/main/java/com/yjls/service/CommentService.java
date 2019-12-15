@@ -20,4 +20,11 @@ public interface CommentService {
 
     //批量删除新闻评论
     public  boolean delmanycomment(String ids);
+
+    //评论成功 给评论数加一
+    public boolean upConmment(int showid);
+
+    //根据新闻id或者评论id查询
+    public PageInfo<CommentEntity> searchByuseridOrshowid(CommentEntity commentEntity);
+
 }

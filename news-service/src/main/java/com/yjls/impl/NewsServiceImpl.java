@@ -95,4 +95,22 @@ public class NewsServiceImpl implements NewsService {
         return newsMapper.views(showid);
     }
 
+    /*
+     * 作者添加新闻
+     * */
+    @Override
+    public boolean addNews(NewsEntity newsEntity) {
+        return newsMapper.addNews(newsEntity);
+    }
+   //作者查看自己上传的所有新闻
+    @Override
+    public List<NewsEntity> getListNewsByUid(int userid) {
+        return newsMapper.getListNewsByUid(userid);
+    }
+
+    @Override
+    public boolean delNews(int showid) {
+        return newsMapper.delNews(showid);
+    }
+
 }

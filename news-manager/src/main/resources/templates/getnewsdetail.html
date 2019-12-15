@@ -32,18 +32,14 @@
     <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
         <i class="layui-icon" style="line-height:30px">ဂ</i></a>
 </div>
-<h2><label>新闻标题:</label><br>
-    <span th:text="${session.newsdetail.showtitle}"></span><br>
-    <label>新闻图片:</label><br>
-    <img th:src="${session.newsdetail.showpicture}" style="height: 100px" width="120px"><th:block th:fragment="news-web"></th:block> <br>
-    <label>新闻发布时间:</label><br>
-    <span th:text="${#dates.format(session.newsdetail.showtime,'yyyy-MM-dd HH-mm-ss')}"></span><br>
-    <label>新闻浏览量:</label><br>
-    <span th:text="${session.newsdetail.showviews}"></span><br>
-    <label>新闻评论数:</label><br>
-    <span th:text="${session.newsdetail.showcomment}"></span><br>
-    <label>新闻内容:</label><br>
-    <span th:text="${session.newsdetail.showcontent}"></span><br></h2>
+<h3>
+    新闻标题:<span th:text="${session.newsdetail.showtitle}"></span><br>
+    新闻图片:<img th:if="${session.newsdetail.showpicture} != null" th:src="@{${session.newsdetail.showpicture}}" style="height: 100px" width="120px"><!--<th:block th:fragment="news-web"></th:block>--> <br>
+    <img th:if="${session.newsdetail.showpicture} == null " th:text="暂无图片" style="height: 100px" width="120px"><th:block th:fragment="news-web"></th:block> <br>
+    新闻发布时间:<span th:text="${#dates.format(session.newsdetail.showtime,'yyyy-MM-dd HH-mm-ss')}"></span><br>
+    新闻浏览量:<span th:text="${session.newsdetail.showviews}"></span><br>
+    新闻评论数:<span th:text="${session.newsdetail.showcomment}"></span><br>
+    新闻内容:<span th:text="${session.newsdetail.showcontent}"></span><br></h3>
 <input type="button" style='background-color:red' onclick="javascript:history.back(-1);" value="返回">
 
 </body>

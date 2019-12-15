@@ -5,11 +5,23 @@
 <mapper namespace="com.yjls.mapper.UserMapper">
 
     <sql id="userField">
-        userid,username,userpass,useraccount,userrole,userphoto,userstatus
+        userid,username,userpass,useraccount,userrole,userphoto,userstatus,applyrealname,applyreason,applyidcard
     </sql>
 
     <sql id="userMapField">
-        nu.userid,username,userpass,useraccount,userrole,userphoto,userstatus,nr.rid,rname,rdesc,nau.auid,auname,aupath,autype,aupid
+        nu.userid,username,userpass,useraccount,userrole,userphoto,userstatus,applyrealname,applyreason,applyidcard,nr.rid,rname,rdesc,nau.auid,auname,aupath,autype,aupid
+    </sql>
+
+    <sql id="roleField">
+        rid,rname,rdesc,rstatus
+    </sql>
+
+    <sql id="authField">
+        auid,auname,aupath,autype,aupid
+    </sql>
+
+    <sql id="roleWithRoleField">
+        nr.rid,rname,rdesc,rstatus,nau.auid,auname,aupath,autype,aupid
     </sql>
 
     <resultMap id="userResultMap" type="userEntity">
@@ -20,6 +32,9 @@
         <result column="userrole" property="userrole"></result>
         <result column="userphoto" property="userphoto"></result>
         <result column="usersatus" property="userstatus"></result>
+        <result column="applyrealname" property="applyrealname"></result>
+        <result column="applyreason" property="applyreason"></result>
+        <result column="applyidcard" property="applyidcard"></result>
         <association property="role" javaType="roleEntity">
             <id column="rid"></id>
             <result column="rname" property="rname"></result>
@@ -34,6 +49,21 @@
         </association>
     </resultMap>
 
+    <!--角色带权限信息-->
+    <resultMap id="roleWithAuthMap" type="roleEntity">
+        <id column="rid" property="rid"></id>
+        <result column="rname" property="rname"></result>
+        <result column="rstatus" property="rstatus"></result>
+        <result column="rdesc" property="rdesc"></result>
+        <collection property="authlist" ofType="authEntity">
+            <id column="auid" property="auid"></id>
+            <result column="auname" property="auname"></result>
+            <result column="aupath" property="aupath"></result>
+            <result column="autype" property="autype"></result>
+            <result column="aupid" property="aupid"></result>
+        </collection>
+    </resultMap>
+
     <!--用户登录-->
     <select id="loginUser" parameterType="userEntity" resultType="userEntity">
         select <include refid="userField"></include> from news_user where useraccount=#{useraccount} and userpass= #{userpass}
@@ -41,7 +71,7 @@
 
     <!--用户注册-->
     <insert id="registUser" parameterType="userEntity">
-        insert into news_user(username,userpass,useraccount,userrole,userphoto,userstatus) values(#{username},#{userpass},#{useraccount},#{userrole},#{userphoto},#{userstatus})
+        insert into news_user(username,userpass,useraccount,userrole,userphoto,userstatus) values(#{username},#{userpass},#{useraccount},1,#{userphoto},#{userstatus})
     </insert>
 
     <!--用户账户唯一性检查-->
@@ -67,16 +97,8 @@
 
     <!--展示所有用户-->
     <select id="listuser" resultType="userEntity" parameterType="userEntity">
-        select <include refid="userMapField"></include>
-        from news_user nu
-        left join news_user_role nur
-        on nu.userid = nur.userid
-        left join news_role nr
-        on nur.rid = nr.rid
-        left join news_role_auth nra
-        on nr.rid = nra.rid
-        left join news_auth nau
-        on nra.auid = nau.auid
+        select <include refid="userField" ></include>
+        from news_user
         <where>
             <if test="null != useraccount and '' != useraccount">
                 and useraccount = #{useraccount}
@@ -84,18 +106,8 @@
             <if test="null != username and '' != username">
                 and username like concat('%',#{username},'%')
             </if>
-        </where>
-    </select>
-
-    <!--查询所有角色-->
-    <select id="listrole" resultType="roleEntity" parameterType="roleEntity">
-        select rid,rname,rdesc from news_role
-        <where>
-            <if test="null != rid and 0 != rid ">
-                and rid = #{rid}
-            </if>
-            <if test="null != rname and rname != rname">
-                and rname = #{rname}
+            <if test="null != userrole and 0 != userrole">
+                and userrole=#{userrole}
             </if>
         </where>
     </select>
@@ -145,5 +157,107 @@
         update news_user set userstatus = #{userstatus} where userid in (${ids})
     </update>
 
+    <!--展示作者详情-->
+      <select id="getwriterdetail" resultType="userEntity">
+          select * from news_user where userid=#{userid}
+      </select>
 
+    <!--作者审核通过-->
+    <update id="checkwriterpass">
+        update news_user set userrole=2 where userid=#{userid}
+    </update>
+
+    <!--作者审核未通过-->
+    <update id="checkwriterfail">
+        update news_user set userrole=1 where userid=#{userid}
+    </update>
+
+    <!--根据账号查询账户信息-->
+    <select id="queryUserByAccount"  resultType="userEntity">
+        select <include refid="userField"></include> where useraccount = #{useraccount}
+    </select>
+
+    <!--根据账号查询角色信息-->
+    <select id="queryRoleByAccount" resultType="roleEntity">
+        select rname
+        from news_role nr
+        left join news_user_role nur
+        on nur.rid = nu.rid
+        left join news_user nu
+        on nu.userid = nur.userid
+        where nu useraccount = #{useraccount}
+    </select>
+
+    <!--展示角色列表-->
+    <select id="listrole" resultType="roleEntity">
+        select <include refid="roleField"></include> from news_role
+        <where>
+            <if test="null != rid and 0 != rid">
+                and rid = #{rid}
+            </if>
+            <if test="null != rname and '' != rname ">
+                and rname = #{rname}
+            </if>
+        </where>
+    </select>
+
+    <!--添加用户角色列表-->
+    <select id="listroleForUser" resultType="roleEntity">
+        select <include refid="roleField"></include> from news_role where rstatus not in(0,2)
+    </select>
+
+    <!--查询所有权限信息-->
+    <select id="queryAuths" resultType="authEntity">
+        select <include refid="authField"></include> from news_auth
+    </select>
+
+    <!--添加角色信息-->
+    <insert id="addRole" useGeneratedKeys="true" keyProperty="rid" parameterType="roleEntity">
+        insert into news_role(rname,rdesc,rstatus) values(#{rname},#{rdesc},#{rstatus})
+    </insert>
+
+    <!--添加角色的权限信息-->
+    <insert id="addAuthOfRole" parameterType="authEntity">
+        insert into news_role_auth(rid,auid) values(#{rid},#{auid})
+    </insert>
+
+    <!--根据角色id查询角色信息-->
+    <select id="queryRoleById" resultMap="roleWithAuthMap">
+        select <include refid="roleWithRoleField"></include>
+        from news_role nr
+        left join news_role_auth nra
+        on nr.rid = nra.rid
+        left join news_auth nau
+        on  nra.auid = nau.auid
+        where nr.rid = #{rid}
+    </select>
+
+    <!--修改角色信息-->
+    <delete id="updRole" parameterType="roleEntity">
+        update news_role
+        <set>
+            <if test="null != rdesc and '' != rdesc">
+                rdesc = #{rdesc},
+            </if>
+            <if test="null != rstatus and 1 != rstatus">
+                rstatus = #{rstatus},
+            </if>
+        </set>
+        where rid = #{rid}
+    </delete>
+
+    <!--删除角色的权限信息-->
+    <delete id="delAuthOfRole">
+        delete from news_role_auth where rid = #{rid}
+    </delete>
+
+    <!--设置角色状态-->
+    <update id="setStatusOfRole">
+        update news_role set rstatus = #{rstatus} where rid = #{rid}
+    </update>
+
+    <!--设置多个角色状态-->
+    <update id="setRStatusByIds">
+        update news_role set rstatus = #{rstatus} where rid in (${rids})
+    </update>
 </mapper>

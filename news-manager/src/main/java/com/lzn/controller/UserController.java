@@ -29,7 +29,7 @@ public class UserController {
     //展示所有用户
     @RequestMapping("listuser")
     public String listuser(UserEntity userEntity, HttpServletRequest request){
-        request.setAttribute("pageInfo",userService.listuser(userEntity));
+        request.getSession().setAttribute("userPageInfo",userService.listuser(userEntity));
         if(StringUtil.isEmpty(userEntity.getUseraccount())){
             request.setAttribute("seuseraccount","");
         }else{
@@ -43,10 +43,18 @@ public class UserController {
         return "listuser";
     }
 
+    //跳转到用户详情
+    @RequestMapping("getwriterdetail")
+    public String getwriterdetail(UserEntity userEntity,HttpServletRequest request){
+       UserEntity userlist2 = userService.getwriterdetail(userEntity);
+        request.getSession().setAttribute("userlist2",userlist2);
+        return "getwriterdetail";
+    }
+
     //跳转到添加用户
     @RequestMapping("jumpAddUser")
     public String jumpAddUser(RoleEntity roleEntity, HttpServletRequest request){
-        List<RoleEntity> list = userService.listrole(roleEntity);
+        List<RoleEntity> list = userService.listroleForUser();
         request.setAttribute("listrole",list);
         return "adduser";
     }
@@ -100,7 +108,7 @@ public class UserController {
     //跳转到修改用户信息
     @RequestMapping("jumpUpdUser")
     public String jumpUpdUser(RoleEntity roleEntity,Integer userid,HttpServletRequest request){
-        List<RoleEntity> list = userService.listrole(roleEntity);
+        List<RoleEntity> list = userService.listroleForUser();
         request.setAttribute("listrole",list);
         UserEntity userEntity = userService.queryUserById(userid);
         request.setAttribute("userEntity",userEntity);
@@ -134,6 +142,12 @@ public class UserController {
         return "backLogin";
     }
 
+    //跳转到后台用户登录
+    @RequestMapping("/")
+    public String jumpLoginback(){
+        return "backLogin";
+    }
+
     //后台用户登录
     @RequestMapping("backlogin")
     @ResponseBody
@@ -146,18 +160,25 @@ public class UserController {
             responseResult.setResultUrl("/");
             return responseResult;
         }else{
-            userEntity.setUserpass(StringUtil.getMD5Transfer(userEntity.getUserpass()));
-            UserEntity userEntity1 = userService.loginUser(userEntity);
-            if(null != userEntity1){
-                //如果查询到登录信息，则填充成功登录消息
-                request.getSession().setAttribute("adminEntity",userEntity1);
-                responseResult.setResult(NewsFinal.SUCCESS_RESULT);
-                responseResult.setResultMsg("登陆成功，前往主页！");
-                responseResult.setResultUrl("managerindex");
+            if("123".equals(userEntity.getUseraccount())){
+                userEntity.setUserpass(StringUtil.getMD5Transfer(userEntity.getUserpass()));
+                UserEntity userEntity1 = userService.loginUser(userEntity);
+                if(null != userEntity1){
+                    //如果查询到登录信息，则填充成功登录消息
+                    request.getSession().setAttribute("adminEntity",userEntity1);
+                    responseResult.setResult(NewsFinal.SUCCESS_RESULT);
+                    responseResult.setResultMsg("登陆成功，前往主页！");
+                    responseResult.setResultUrl("managerindex");
+                }else{
+                    //如果没有查到登录信息，则填充登录失败返回消息
+                    responseResult.setResult(NewsFinal.FILED_RESULT);
+                    responseResult.setResultMsg("账号或密码不正确，请重新登录！");
+                    responseResult.setResultUrl("jumpBackLogin");
+                }
             }else{
-                //如果没有查到登录信息，则填充登录失败返回消息
+                //没有权限
                 responseResult.setResult(NewsFinal.FILED_RESULT);
-                responseResult.setResultMsg("账号或密码不正确，请重新登录！");
+                responseResult.setResultMsg("您没有权限！");
                 responseResult.setResultUrl("jumpBackLogin");
             }
             return responseResult;
@@ -179,6 +200,26 @@ public class UserController {
             responseResult.setResultMsg("注销失败，请稍后再试！");
         }
         return responseResult;
+    }
+
+    //作者审核通过
+    @RequestMapping("checkwriterpass")
+    public String checkwriterpass(Integer userid){
+        boolean b = userService.checkwriterpass(userid);
+        if(b){
+
+        }
+        return "redirect:listuser";
+    }
+
+    //作者审核通过
+    @RequestMapping("checkwriterfail")
+    public String checkwriterfail(Integer userid){
+        boolean b = userService.checkwriterfail(userid);
+        if(b){
+
+        }
+        return "redirect:listuser";
     }
 
 }

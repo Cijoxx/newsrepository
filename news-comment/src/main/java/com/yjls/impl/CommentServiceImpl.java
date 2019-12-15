@@ -48,5 +48,19 @@ public class CommentServiceImpl implements CommentService{
         return commentMapper.delmanycomment(str);
     }
 
+    //评论成功 给评论数加一
+    @Override
+    public boolean upConmment(int showid) {
+        return commentMapper.upConmment(showid);
+    }
+
+    //根据新闻id或者用户id查询
+    @Override
+    public PageInfo<CommentEntity> searchByuseridOrshowid(CommentEntity commentEntity) {
+        PageHelper.startPage(commentEntity.getPageNum(),commentEntity.getPageSize());
+        List<CommentEntity> commentEntities = commentMapper.searchByuseridOrshowid(commentEntity);
+        PageInfo<CommentEntity> commentEntityPageInfo=new PageInfo<>(commentEntities);
+        return commentEntityPageInfo;
+    }
 
 }

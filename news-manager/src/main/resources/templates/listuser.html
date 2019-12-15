@@ -28,7 +28,7 @@
         <a>
           <cite>导航元素</cite></a>
       </span>
-    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" th:href="@{listuser}" title="刷新">
         <i class="layui-icon" style="line-height:30px">ဂ</i></a>
 </div>
 <div class="x-body">
@@ -42,13 +42,15 @@
     <xblock>
         <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
         <button class="layui-btn" onclick="x_admin_show('添加用户','jumpAddUser')"><i class="layui-icon"></i>添加</button>
-        <span class="x-right" style="line-height:40px" th:text="'共有数据：'+${pageInfo.total}+'条'"></span>
+        <a class="layui-btn"  th:href="@{'listuser?userrole='+2}">作者</a>
+        <a class="layui-btn"  th:href="@{'listuser?userrole='+4}">作者审核</a>
+        <span class="x-right" style="line-height:40px" th:text="'共有数据：'+${session.userPageInfo.total}+'条'"></span>
     </xblock>
     <table class="layui-table">
         <thead>
         <tr>
             <th>
-                <input type="checkbox" name="allck" th:value="${pageInfo.pageNum}" />
+                <input type="checkbox" name="allck" th:value="${session.userPageInfo.pageNum}" />
             </th>
             <th>用户ID</th>
             <th>用户昵称</th>
@@ -57,18 +59,20 @@
             <th>用户头像</th>
             <th>用户状态</th>
             <th>操作</th>
+            <th>用户详情</th>
         </thead>
         <tbody>
-        <tr th:each="user,userStatus:${pageInfo.list}">
+        <tr th:each="user,userStatus:${session.userPageInfo.list}">
             <td>
                 <input type="checkbox" name="signalck" th:value="${user.userid}" />
             </td>
             <td th:text="${user.userid}"></td>
             <td th:text="${user.username}"></td>
             <td th:text="${user.useraccount}"></td>
-            <td th:if="${user.userrole} == 1" th:text="管理员"></td>
+            <td th:if="${user.userrole} == 3" th:text="管理员"></td>
             <td th:if="${user.userrole} == 2" th:text="作者"></td>
-            <td th:if="${user.userrole} == 3" th:text="读者"></td>
+            <td th:if="${user.userrole} == 1" th:text="读者"></td>
+            <td th:if="${user.userrole} == 4" th:text="作者（待审核）"></td>
             <td style="text-align: center"><img style="height: 50px;" th:src="@{${user.userphoto}}"></td>
             <td th:id="'userstatus_'+${user.userid}" class="td-status">
                 <span th:if="${user.userstatus} == 0 " th:text="禁用" class="layui-btn layui-btn-disabled layui-btn-normal layui-btn-mini"></span>
@@ -86,19 +90,21 @@
                     <i class="layui-icon">&#xe640;</i>
                 </span>
             </td>
+            <td><a th:if="${user.userrole}==2" th:href="@{'getwriterdetail?userid='+${user.userid}}" style="color: chartreuse" >详情</a>
+           <a th:if="${user.userrole}==4" th:href="@{'getwriterdetail?userid='+${user.userid}}" style="color: chartreuse" >详情</a></td>
         </tr>
         </tbody>
     </table>
     <div class="page">
         <div>
             <!--如果当前页不是第一页,给上一页箭头附加连接到当前页的前一页-->
-            <a th:if="${pageInfo.pageNum } != ${pageInfo.firstPage}" class="prev" th:href="@{'listuser?pageNum='+${pageInfo.prePage}+'&pageSize='+${pageInfo.pageSize}}+'&useraccount='+${seuseraccount}+'&username='+${seusername}">&lt;&lt;</a>
+            <a th:if="${session.userPageInfo.pageNum } != ${session.userPageInfo.firstPage}" class="prev" th:href="@{'listuser?pageNum='+${session.userPageInfo.prePage}+'&pageSize='+${session.userPageInfo.pageSize}+'&useraccount='+${seuseraccount}+'&username='+${seusername}}">&lt;&lt;</a>
             <!--循环打印页码-->
             <!--如果页码不等于当前页的页码，则为页码附加连接-->
-            <a th:each="pg:${pageInfo.navigatepageNums}" class="num" th:href="@{'listuser?pageNum='+${pg}+'&pageSize='+${pageInfo.pageSize}}+'&useraccount='+${seuseraccount}+'&username='+${seusername}" th:text="${pg}"></a>
+            <a th:each="pg:${session.userPageInfo.navigatepageNums}" class="num" th:href="@{'listuser?pageNum='+${pg}+'&pageSize='+${session.userPageInfo.pageSize}+'&useraccount='+${seuseraccount}+'&username='+${seusername}}" th:text="${pg}"></a>
 
             <!--如果当前页是最后一页，则给下一页箭头附件连接到当前页-->
-            <a th:if="${pageInfo.pageNum } != ${pageInfo.lastPage}" class="next" th:href="@{'listuser?pageNum='+${pageInfo.pageNum}+'&pageSize='+${pageInfo.pageSize}}+'&useraccount='+${seuseraccount}+'&username='+${seusername}">&gt;&gt;</a>
+            <a th:if="${session.userPageInfo.pageNum } != ${session.userPageInfo.lastPage}" class="next" th:href="@{'listuser?pageNum='+${session.userPageInfo.nextPage}+'&pageSize='+${session.userPageInfo.pageSize}+'&useraccount='+${seuseraccount}+'&username='+${seusername}}">&gt;&gt;</a>
 
         </div>
     </div>

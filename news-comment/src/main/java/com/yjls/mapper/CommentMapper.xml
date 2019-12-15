@@ -112,5 +112,9 @@
         </if>
     </select>
 
+    <!--评论成功评论数加一-->
+    <update id="upConmment">
+        update news_show set showcomment=showcomment+1 where showid=#{showid}
+    </update>
 
 </mapper>

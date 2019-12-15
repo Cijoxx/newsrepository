@@ -5,19 +5,26 @@ import java.io.Serializable;
 import java.util.List;
 
 public class RoleEntity implements Serializable {
-    private Integer rid;
-    private String rname;
-    private String rdesc;
+    private Integer rid;//角色id
+    private String rname;//角色名
+    private String rdesc;//角色备注
+    private Integer rstatus = 1;//角色状态
+
+    private Integer pageNum = 1;
+    private Integer pageSize = 3;
 
     private List<AuthEntity> authlist;
 
     public RoleEntity() {
     }
 
-    public RoleEntity(Integer rid, String rname, String rdesc, List<AuthEntity> authlist) {
+    public RoleEntity(Integer rid, String rname, String rdesc, Integer rstatus, Integer pageNum, Integer pageSize, List<AuthEntity> authlist) {
         this.rid = rid;
         this.rname = rname;
         this.rdesc = rdesc;
+        this.rstatus = rstatus;
+        this.pageNum = pageNum;
+        this.pageSize = pageSize;
         this.authlist = authlist;
     }
 
@@ -45,6 +52,30 @@ public class RoleEntity implements Serializable {
         this.rdesc = rdesc;
     }
 
+    public Integer getRstatus() {
+        return rstatus;
+    }
+
+    public void setRstatus(Integer rstatus) {
+        this.rstatus = rstatus;
+    }
+
+    public Integer getPageNum() {
+        return pageNum;
+    }
+
+    public void setPageNum(Integer pageNum) {
+        this.pageNum = pageNum;
+    }
+
+    public Integer getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(Integer pageSize) {
+        this.pageSize = pageSize;
+    }
+
     public List<AuthEntity> getAuthlist() {
         return authlist;
     }
@@ -59,6 +90,9 @@ public class RoleEntity implements Serializable {
                 "rid=" + rid +
                 ", rname='" + rname + '\'' +
                 ", rdesc='" + rdesc + '\'' +
+                ", rstatus=" + rstatus +
+                ", pageNum=" + pageNum +
+                ", pageSize=" + pageSize +
                 ", authlist=" + authlist +
                 '}';
     }

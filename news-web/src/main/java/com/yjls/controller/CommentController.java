@@ -35,6 +35,9 @@ public class CommentController {
                 responseResult.setResult(NewsFinal.SUCCESS_RESULT);
                 responseResult.setResultMsg("评论添加成功！");
                 responseResult.setResultUrl("jumpNews?showid="+commentEntity.getShowid());
+                //评论添加成功后给评论数加一
+                boolean b = commentService.upConmment(commentEntity.getShowid());
+
             }else{
                 responseResult.setResult(NewsFinal.FILED_RESULT);
                 responseResult.setResultMsg("评论添加失败");

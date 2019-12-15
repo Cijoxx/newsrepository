@@ -111,4 +111,22 @@
     <update id="views">
         update news_show set showviews=showviews+1 where showid=#{showid}
     </update>
+
+    <!--根据作者id添加新闻-->
+    <insert id="addNews" >
+        insert  into news_show( showtitle,showpicture,showcontent,showtype,showstatus,showviews,showcomment,showgivegood,
+        userid) values (#{showtitle},#{showpicture},#{showcontent},#{showtype},3,#{userid},#{showviews},#{showcomment},#{showgivegood})
+
+    </insert>
+
+    <!--作者上传的所有新闻-->
+
+    <select id="getListNewsByUid" resultType="newsEntity" >
+    select  * from news_show where userid=#{userid}
+    </select>
+
+    <!--作者删除自己的新闻-->
+    <delete id="delNews">
+        delete from  news_show where showid=#{showid}
+    </delete>
 </mapper>

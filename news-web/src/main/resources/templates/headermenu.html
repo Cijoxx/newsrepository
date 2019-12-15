@@ -11,16 +11,24 @@
                 <div class="col-xs-4 col-sm-5">
                     <div class="weather">
                         <div class="weather__temperature">
-                            <a th:if="${session.userEntity}!=null">
-                                <img id="imgPhoto" style="border-radius: 25px;border: none;" width="60px" height="60px"img th:src="${session.userEntity.userphoto}"> </a>
+                            <div th:if="${session.userEntity}!=null">
+                                <a ></a>
+                                <img th:if="${session.userEntity.userphoto}!=null" id="imgPhoto" style="border-radius: 25px;border: none;" width="60px" height="60px" th:src="@{${session.userEntity.userphoto}}">
+                                <img th:if="${session.userEntity.userphoto}==null" id="imgPhoto" style="border-radius: 25px;border: none;" width="60px" height="60px" th:src="@{'news\\img\\content\\comment.png'}">
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-xs-6 col-sm-7">
                     <div class="weather__city" >
                         <h2><a th:if="${session.userEntity}==null" th:href="jumpLogin">登录</a></h2>
-                        <h2><a th:if="${session.userEntity}!=null" th:href="jumpuserinfo" th:text="${session.userEntity.username}"></a></h2>
-                        <h2><a th:if="${session.userEntity}!=null" th:href="logout">注销</a> </h2>
+                        <h2><a th:if="${session.userEntity}==null" th:href="jumpregist">注册</a></h2>
+                        <div th:if="${session.userEntity}!=null">
+                        <h2><a th:if="${session.userEntity.username}==null" th:href="jumpuserinfo">个人中心</a></h2>
+                        <h2><a th:if="${session.userEntity.username}!=null" th:href="jumpuserinfo" th:text="${session.userEntity.username}"></a></h2>
+                            <h2><a th:href="logout">注销</a> </h2>
+                        </div>
+
                     </div>
                 </div>
             </div>
